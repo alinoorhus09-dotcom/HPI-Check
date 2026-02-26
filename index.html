@@ -19,22 +19,22 @@
         <p class="text-[10px] text-gray-500 uppercase tracking-widest mt-1">Official DVLA Data Access</p>
     </div>
 
-    <!-- Search Section -->
+    <!-- The Search Box -->
     <div class="w-full max-w-md mt-8 space-y-4">
         <input id="regIn" type="text" placeholder="ENTER REG" class="w-full p-4 rounded-xl bg-slate-800 border border-slate-700 text-center text-2xl font-bold uppercase tracking-widest focus:outline-none focus:border-sky-500">
         <button onclick="fetchGovData()" class="w-full p-4 rounded-xl font-bold text-slate-900 btn-glow uppercase tracking-wider">Run Full History Scan</button>
     </div>
 
-    <!-- Loading -->
+    <!-- Loading Spinner -->
     <div id="loading" class="hidden mt-10 text-center">
         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500 mx-auto"></div>
         <p class="text-xs text-gray-500 mt-4">Querying Secure Government Servers...</p>
     </div>
 
-    <!-- Error Box -->
+    <!-- Error Message Box -->
     <div id="errorBox" class="hidden w-full max-w-md mt-4 p-4 bg-red-500/10 border border-red-500/50 rounded-xl text-red-500 text-xs text-center"></div>
 
-    <!-- Results -->
+    <!-- Results Display -->
     <div id="report" class="hidden w-full max-w-md mt-8 space-y-4">
         <div class="glass p-6 rounded-3xl border-l-4 border-sky-500">
             <h2 id="resReg" class="text-4xl font-black">---</h2>
@@ -56,36 +56,21 @@
             const plate = document.getElementById('regIn').value.trim().toUpperCase();
             if (!plate) return alert("Please enter a registration");
 
-            const load = document.getElementById('loading');
-            const report = document.getElementById('report');
-            const errorBox = document.getElementById('errorBox');
-
-            // Reset UI
-            load.style.display = "block";
-            report.style.display = "none";
-            errorBox.style.display = "none";
+            document.getElementById('loading').style.display = "block";
+            document.getElementById('report').style.display = "none";
+            document.getElementById('errorBox').style.display = "none";
 
             try {
-                // Using a proxy to bypass the "Load Failed" CORS error
-                const proxyUrl = "https://api.allorigins.win/raw?url=";
-                const targetUrl = "https://driver-vehicle-licensing.api.gov.uk/vehicle-enquiry/v1/vehicles";
-
-                const response = await fetch(proxyUrl + encodeURIComponent(targetUrl), {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-api-key': 'pKb6MZppAVjFm2tpe5UP7BdFsEs1vzj5ZWnWWSic'
-                    },
-                    body: JSON.stringify({ registrationNumber: plate })
-                });
-
-                if (!response.ok) throw new Error("Vehicle not found or API limit reached.");
-
+                // This connects to the api/check.js file
+                const response = await fetch(`/api/check?vrm=${plate}`);
+                
+                if (!response.ok) throw new Error("Vehicle Not Found or Connection Error");
+                
                 const data = await response.json();
 
-                // Fill UI
-                document.getElementById('resReg').innerText = data.registrationNumber;
-                document.getElementById('resMake').innerText = `${data.make} (${data.monthOfFirstRegistration})`;
+                // Mapping the data to the boxes above
+                document.getElementById('resReg').innerText = data.registrationNumber || plate;
+                document.getElementById('resMake').innerText = data.make || "Found";
                 document.getElementById('resTax').innerText = data.taxStatus || "N/A";
                 document.getElementById('resMOT').innerText = data.motStatus || "N/A";
                 document.getElementById('resEngine').innerText = (data.engineCapacity || "0") + "cc";
@@ -93,13 +78,13 @@
                 document.getElementById('resFuel').innerText = data.fuelType || "N/A";
                 document.getElementById('resYear').innerText = data.yearOfManufacture || "N/A";
 
-                load.style.display = "none";
-                report.style.display = "block";
+                document.getElementById('loading').style.display = "none";
+                document.getElementById('report').style.display = "block";
 
             } catch (err) {
-                load.style.display = "none";
-                errorBox.style.display = "block";
-                errorBox.innerText = err.message;
+                document.getElementById('loading').style.display = "none";
+                document.getElementById('errorBox').style.display = "block";
+                document.getElementById('errorBox').innerText = "ERROR: " + err.message;
             }
         }
     </script>
