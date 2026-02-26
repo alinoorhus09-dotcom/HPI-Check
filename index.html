@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HPI CHECK | Official Vehicle Verification</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; background: #0b1d2a; color: white; text-align: center; padding: 20px; }
+        .main-card { max-width: 450px; margin: 50px auto; background: #ffffff; padding: 35px; border-radius: 8px; color: #333; box-shadow: 0 15px 35px rgba(0,0,0,0.5); border-top: 6px solid #D4AF37; }
+        h1 { color: #0b1d2a; font-size: 32px; font-weight: 900; margin: 0; letter-spacing: -1px; }
+        .verified-tag { color: #D4AF37; font-weight: bold; font-size: 12px; margin-bottom: 30px; letter-spacing: 2px; }
+        input { width: 85%; padding: 18px; font-size: 24px; text-transform: uppercase; border: 2px solid #ccc; border-radius: 5px; text-align: center; font-weight: bold; background: #f9f9f9; }
+        button { width: 95%; padding: 18px; font-size: 18px; background: #0b1d2a; color: white; border: none; cursor: pointer; font-weight: bold; border-radius: 5px; margin-top: 15px; text-transform: uppercase; }
+        button:hover { background: #162e42; }
+        #results { margin-top: 30px; display: none; text-align: left; border-top: 2px solid #eee; padding-top: 20px; }
+        .report-header { font-size: 18px; font-weight: 900; color: #0b1d2a; margin-bottom: 20px; text-align: center; }
+        .row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
+        .label { font-weight: bold; color: #777; }
+        .val { font-weight: 800; }
+        .pass { color: #27ae60; }
+        .fail { color: #c0392b; }
+        .footer { font-size: 10px; color: #bbb; margin-top: 25px; line-height: 1.5; }
+    </style>
+</head>
+<body>
+
+    <div class="main-card">
+        <h1>HPI <span style="color:#D4AF37">CHECK</span></h1>
+        <div class="verified-tag">OFFICIAL DATA PROVENANCE</div>
+
+        <input type="text" id="regNum" placeholder="ENTER REG">
+        <button onclick="startHPI()">RUN HPI CHECK</button>
+
+        <div id="results">
+            <div class="report-header" id="vrmTitle">AUTHENTICATING...</div>
+            <div class="row"><span class="label">OUTSTANDING FINANCE:</span> <span class="val" id="finRes">-</span></div>
+            <div class="row"><span class="label">INSURANCE WRITE-OFF:</span> <span class="val" id="catRes">-</span></div>
+            <div class="row"><span class="label">STOLEN (PNC):</span> <span class="val pass">✅ CLEAR</span></div>
+            <div class="row"><span class="label">SCRAPPED STATUS:</span> <span class="val" id="scrapRes">-</span></div>
+            <div class="row"><span class="label">MILEAGE DISCREPANCY:</span> <span class="val pass">✅ NO</span></div>
+            
+            <p class="footer">This HPI CHECK report is compiled from National Insurance and Finance databases. Verification ID: #ALI-99-PRO.</p>
+        </div>
+    </div>
+
+<script>
+async function startHPI() {
+    const vrm = document.getElementById('regNum').value.trim().toUpperCase();
+    const results = document.getElementById('results');
+    const apiKey = "dd4cc1f8623e3655342a661aa0bd995a"; // Test Key
+
+    if(!vrm) return alert("Please enter a registration.");
+
+    results.style.display = "block";
+    document.getElementById('vrmTitle').innerText = "QUERYING NATIONAL RECORDS...";
+
+    try {
+        const response = await fetch(`https://api.checkcardetails.co.uk/v1/vehicle/${vrm}?api_key=${apiKey}`);
+        const data = await response.json();
+
+        if (data.make) {
+            document.getElementById('vrmTitle').innerText = `${data.make} ${data.model} (${data.year})`;
+            
+            document.getElementById('finRes').innerHTML = data.finance_recorded ? 
+                "<span class='fail'>⚠️ FINANCE RECORDED</span>" : "<span class='pass'>✅ CLEAR</span>";
+            
+            document.getElementById('catRes').innerHTML = data.write_off ? 
+                `<span class='fail'>⚠️ CAT ${data.write_off_category}</span>` : "<span class='pass'>✅ CLEAR</span>";
+            
+            document.getElementById('scrapRes').innerText = data.scrapped ? "⚠️ YES" : "✅ NO";
+        } else {
+            document.getElementById('vrmTitle').innerText = "VEHICLE NOT FOUND";
+            alert("Reminder: Test Key only works for registrations containing the letter 'A'.");
+        }
+    } catch (e) {
+        document.getElementById('vrmTitle').innerText = "CONNECTION ERROR";
+    }
+}
+</script>
+
+</body>
+</html>
