@@ -3,212 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HPI CHECK | Premium Vehicle History Report</title>
+    <title>HPI Check - Official Vehicle Verification</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --success: #22c55e; --error: #ef4444; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: white; margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .app-container { width: 100%; max-width: 600px; margin-top: 40px; }
-        .hero-box { background: var(--card); padding: 40px 20px; border-radius: 20px; text-align: center; border: 1px solid #334155; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
-        .logo { font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-bottom: 5px; }
-        .logo span { color: var(--accent); }
-        .tagline { color: #94a3b8; font-size: 13px; margin-bottom: 30px; text-transform: uppercase; }
-        input { width: 85%; padding: 20px; border-radius: 12px; border: 2px solid #334155; background: #0f172a; color: white; font-size: 24px; font-weight: 800; text-align: center; text-transform: uppercase; outline: none; transition: 0.3s; margin-bottom: 15px; }
-        input:focus { border-color: var(--accent); }
-        button { width: 95%; padding: 20px; border-radius: 12px; border: none; background: var(--accent); color: #0f172a; font-size: 18px; font-weight: 700; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
-        button:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(56, 189, 248, 0.3); }
-
-        #loading-screen { display: none; margin-top: 30px; text-align: left; background: #111827; padding: 20px; border-radius: 12px; border-left: 4px solid var(--accent); }
-        .scan-line { font-size: 12px; color: #64748b; margin: 8px 0; font-family: monospace; }
-        .spinner { width: 16px; height: 16px; border: 2px solid #334155; border-top: 2px solid var(--accent); border-radius: 50%; display: inline-block; animation: spin 1s linear infinite; vertical-align: middle; margin-right: 10px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        #report { display: none; margin-top: 30px; animation: fadeIn 0.5s ease; text-align: left; }
-        .car-identity h2 { margin: 0; font-size: 26px; color: var(--accent); text-transform: uppercase; }
-        .car-identity p { margin: 5px 0 25px 0; color: #94a3b8; font-size: 14px; }
-        .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .data-item { background: #334155; padding: 15px; border-radius: 12px; }
-        .item-label { font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px; }
-        .item-val { font-size: 14px; font-weight: 700; }
-        .green { color: var(--success); }
-        .red { color: var(--error); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* New Styles for MOT History */
-        .mot-history { margin-top: 20px; }
-        .mot-history h3 { font-size: 18px; color: var(--accent); margin-bottom: 10px; }
-        .mot-entry { background: #1e293b; padding: 10px; border-radius: 8px; margin-bottom: 5px; }
-        .mot-entry p { margin: 5px 0; }
-        .mot-entry .status { font-weight: bold; }
-        .mot-entry .advisory { color: #94a3b8; }
-        .mot-entry .failure { color: #ef4444; }
+        body { background-color: #0f172a; color: white; font-family: sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .btn-glow { transition: 0.3s; background: #38bdf8; }
+        .btn-glow:hover { box-shadow: 0 0 15px #38bdf8; transform: scale(1.02); }
     </style>
 </head>
-<body>
+<body class="flex flex-col items-center p-6">
 
-<div class="app-container">
-    <div class="hero-box">
-        <div class="logo">HPI<span>CHECK</span></div>
-        <div class="tagline">Official Vehicle Data Verification</div>
-        
-        <input type="text" id="regIn" placeholder="ENTER REG">
-        <button onclick="startDeepScan()">Run Full History Scan</button>
+    <div class="w-full max-w-md text-center mt-10">
+        <h1 class="text-3xl font-bold tracking-tighter text-sky-400">HPICHECK</h1>
+        <p class="text-xs text-gray-400 uppercase tracking-widest mt-1">Official Vehicle Data Verification</p>
+    </div>
 
-        <div id="loading-screen">
-            <div id="l1" class="scan-line"><div class="spinner"></div> Connecting to National Records...</div>
-            <div id="l2" class="scan-line" style="display:none;"><div class="spinner"></div> Scanning Write-Off Database...</div>
-            <div id="l3" class="scan-line" style="display:none;"><div class="spinner"></div> Authenticating Vehicle Identity...</div>
+    <!-- Search Box -->
+    <div class="w-full max-w-md mt-8 space-y-4">
+        <input id="regIn" type="text" placeholder="ENTER REG" class="w-full p-4 rounded-lg bg-slate-800 border border-slate-700 text-center text-2xl font-bold uppercase tracking-widest focus:outline-none focus:border-sky-500">
+        <button onclick="startDeepScan()" class="w-full p-4 rounded-lg font-bold text-slate-900 btn-glow uppercase tracking-wider">Run Full History Scan</button>
+    </div>
+
+    <!-- Status Messages -->
+    <div id="loading-screen" class="hidden mt-10 text-center">
+        <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-sky-500 mx-auto"></div>
+        <p class="text-sm text-gray-400 mt-4" id="status-text">Connecting to DVLA Database...</p>
+        <p id="12" class="hidden text-xs text-sky-500 mt-2">Bypassing local firewalls...</p>
+        <p id="13" class="hidden text-xs text-red-500 mt-2">Error connecting to live data. Check API Key!</p>
+    </div>
+
+    <!-- Result Report -->
+    <div id="report" class="hidden w-full max-w-md mt-8 space-y-4">
+        <div class="glass p-6 rounded-2xl">
+            <h2 id="carName" class="text-4xl font-black text-white">---</h2>
+            <p id="carSub" class="text-sky-400 font-medium">Vehicle Identified</p>
+            
+            <div class="grid grid-cols-2 gap-4 mt-6 text-sm">
+                <div><p class="text-gray-500">Engine</p><p id="resEngine" class="font-bold">--</p></div>
+                <div><p class="text-gray-500">Colour</p><p id="resColor" class="font-bold">--</p></div>
+                <div><p class="text-gray-500">Fuel</p><p id="resFuel" class="font-bold">--</p></div>
+                <div><p class="text-gray-500">Year</p><p id="resYear" class="font-bold">--</p></div>
+                <div><p class="text-gray-500">Tax Status</p><p id="resTax" class="font-bold">--</p></div>
+                <div><p class="text-gray-500">MOT Status</p><p id="resMOT" class="font-bold">--</p></div>
+            </div>
         </div>
 
-        <div id="report">
-            <div class="car-identity">
-                <h2 id="carName">LOADING...</h2>
-                <p id="carSub">-</p>
-            </div>
-            
-            <div class="data-grid">
-                <div class="data-item"><div class="item-label">Engine Size</div><div class="item-val" id="resEngine">-</div></div>
-                <div class="data-item"><div class="item-label">Color</div><div class="item-val" id="resColor">-</div></div>
-                <div class="data-item"><div class="item-label">BHP</div><div class="item-val" id="resBHP">-</div></div>
-                <div class="data-item"><div class="item-label">Fuel Type</div><div class="item-val" id="resFuel">-</div></div>
-                <div class="data-item"><div class="item-label">Year</div><div class="item-val" id="resYear">-</div></div>
-                <div class="data-item"><div class="item-label">Mileage</div><div class="item-val" id="resMileage">-</div></div>
-                <div class="data-item"><div class="item-label">Insurance Group</div><div class="item-val" id="resInsurance">-</div></div>
-                <div class="data-item"><div class="item-label">Registered</div><div class="item-val" id="resRegistered">-</div></div>
-                <div class="data-item"><div class="item-label">Tax Status</div><div class="item-val" id="resTax">-</div></div>
-                <div class="data-item"><div class="item-label">ULEZ</div><div class="item-val" id="resULEZ">-</div></div>
-                <div class="data-item"><div class="item-label">Body Type</div><div class="item-val" id="resBodyType">-</div></div>
-                <div class="data-item"><div class="item-label">MPG (Combined)</div><div class="item-val" id="resMPG">-</div></div>
-            </div>
-
-            <div class="mot-history" id="motHistorySection">
-                <h3>MOT History</h3>
-                <div id="motHistory"></div>
-            </div>
-
-            <div class="recalls" id="recallsSection">
-                <h3>Recalls</h3>
-                <p id="resRecalls"></p>
-            </div>
-
-            <p style="font-size: 9px; color: #64748b; margin-top: 20px; text-align: center;">POWERED BY LIVE RAPIDAPI DATA • REPORT ID: #ULTIMATE-SCAN</p>
+        <div class="glass p-6 rounded-2xl">
+            <h3 class="text-sm font-bold uppercase text-gray-400 mb-4">Official Notices</h3>
+            <p id="resULEZ" class="text-xs text-gray-300 italic">Check TfL website for ULEZ compliance.</p>
         </div>
     </div>
-</div>
 
-<script>
-function delay(ms) { return new Promise(res => setTimeout(res, ms)); }
+    <script>
+        function delay(ms) { return new Promise(res => setTimeout(res, ms)); }
 
-async function startDeepScan() {
-    const vrmInput = document.getElementById('regIn').value.trim().toUpperCase();
-    const load = document.getElementById('loading-screen');
-    const report = document.getElementById('report');
-    
-    const apiKey = "68b3a2143fmshf64b226f459aaaap16ba12jsne2f8c3c3b9d7"; 
+        async function startDeepScan() {
+            const vrmInput = document.getElementById('regIn').value.trim().toUpperCase();
+            const load = document.getElementById('loading-screen');
+            const report = document.getElementById('report');
+            const errorText = document.getElementById('13');
 
-    if(!vrmInput) return alert("Please enter a registration.");
+            if (!vrmInput) return alert("Please enter a registration.");
 
-    report.style.display = "none";
-    load.style.display = "block";
-    document.getElementById('l2').style.display = "none";
-    document.getElementById('l3').style.display = "none";
+            // Reset view
+            report.style.display = "none";
+            load.style.display = "block";
+            errorText.style.display = "none";
+            document.getElementById('12').style.display = "none";
 
-    const options = {
-        method: 'POST',
-        headers: {
-            'content-type': 'application/json',
-            'x-rapidapi-key': apiKey,
-            'x-rapidapi-host': 'uk-vehicle-data1.p.rapidapi.com'
-        },
-        body: JSON.stringify({ vrm: vrmInput })
-    };
+            try {
+                await delay(800);
+                document.getElementById('12').style.display = "block";
 
-    try {
-        await delay(800); document.getElementById('l2').style.display = "block";
-        
-        const response = await fetch('https://uk-vehicle-data1.p.rapidapi.com/cartax.api.v1.Public/GetInitialReport', options);
-        const result = await response.json();
-        
-        // This targets the "vehicle" object from your screenshot
-        const data = result.vehicle; 
-
-        await delay(800); document.getElementById('l3').style.display = "block";
-        await delay(600);
-
-        if (data && data.vrm) {
-            load.style.display = "none";
-            report.style.display = "block";
-            
-            // Header Info
-            document.getElementById('carName').innerText = data.vrm;
-            document.getElementById('carSub').innerText = `${data.make} ${data.model} (${data.year})`;
-            
-            // Basic Details
-            document.getElementById('resEngine').innerText = data.engine_size || "N/A";
-            document.getElementById('resColor').innerText = data.colour || "N/A";
-            document.getElementById('resBHP').innerText = data.bhp || "N/A";
-            document.getElementById('resFuel').innerText = data.fuel || "N/A";
-            document.getElementById('resYear').innerText = data.year || "N/A";
-            document.getElementById('resMileage').innerText = data.mileage || "N/A";
-            document.getElementById('resInsurance').innerText = data.insurance?.group || "N/A";
-            document.getElementById('resRegistered').innerText = data.registered || "N/A";
-            document.getElementById('resBodyType').innerText = data.body_type || "N/A";
-
-            // Tax and ULEZ
-            document.getElementById('resTax').innerText = data.tax?.status || "N/A";
-            document.getElementById('resULEZ').innerText = data.ulez_compliance?.status || "N/A";
-
-            //MPG
-            document.getElementById('resMPG').innerText = data.running_costs?.mpg?.combined || "N/A";
-
-            // Recalls
-            document.getElementById('resRecalls').innerText = data.recalls?.message || "No data available.";
-            document.getElementById('recallsSection').style.display = data.recalls ? "block" : "none";
-
-            // MOT History
-            const motHistoryDiv = document.getElementById('motHistory');
-            motHistoryDiv.innerHTML = ''; // Clear previous results
-            if (data.mot && data.mot.test_result) {
-                data.mot.test_result.forEach(test => {
-                    const motEntry = document.createElement('div');
-                    motEntry.classList.add('mot-entry');
-                    let motDetails = `<p><strong>Date:</strong> ${test.test_date}</p>`;
-                    motDetails += `<p class="status"><strong>Status:</strong> ${test.status} - ${test.message}</p>`;
-
-                    if (test.advisory && test.advisory.length > 0) {
-                        motDetails += `<p><strong>Advisories:</strong></p><ul>`;
-                        test.advisory.forEach(adv => {
-                            motDetails += `<li class="advisory">${adv.description}</li>`;
-                        });
-                        motDetails += `</ul>`;
-                    }
-
-                     if (test.failure && test.failure.length > 0) {
-                        motDetails += `<p><strong>Failures:</strong></p><ul>`;
-                        test.failure.forEach(fail => {
-                            motDetails += `<li class="failure">${fail.description}</li>`;
-                        });
-                        motDetails += `</ul>`;
-                    }
-
-                    motEntry.innerHTML = motDetails;
-                    motHistoryDiv.appendChild(motEntry);
+                const response = await fetch('https://driver-vehicle-licensing.api.gov.uk/vehicle-enquiry/v1/vehicles', {
+                    method: 'POST',
+                    headers: {
+                        'content-type': 'application/json',
+                        'x-api-key': 'pKb6MZppAVjFm2tpe5UP7BdFsEs1vzj5ZWnWWSic'
+                    },
+                    body: JSON.stringify({ registrationNumber: vrmInput })
                 });
-                document.getElementById('motHistorySection').style.display = "block";
-            } else {
-                motHistoryDiv.innerHTML = '<p>No MOT history available.</p>';
-                document.getElementById('motHistorySection').style.display = "none";
+
+                if (!response.ok) {
+                    throw new Error('Vehicle not found or API Key error');
+                }
+
+                const data = await response.json();
+                
+                await delay(1000); // Aesthetic delay for "Scanning" effect
+                load.style.display = "none";
+                report.style.display = "block";
+
+                // Map Government data to HTML
+                document.getElementById('carName').innerText = data.registrationNumber;
+                document.getElementById('carSub').innerText = `${data.make} (First Reg: ${data.monthOfFirstRegistration})`;
+                
+                document.getElementById('resEngine').innerText = data.engineCapacity ? data.engineCapacity + "cc" : "N/A";
+                document.getElementById('resColor').innerText = data.colour || "N/A";
+                document.getElementById('resFuel').innerText = data.fuelType || "N/A";
+                document.getElementById('resYear').innerText = data.yearOfManufacture || "N/A";
+                document.getElementById('resTax').innerText = data.taxStatus || "N/A";
+                document.getElementById('resMOT').innerText = data.motStatus || "N/A";
+
+            } catch (error) {
+                console.error(error);
+                load.style.display = "block";
+                errorText.style.display = "block";
+                errorText.innerText = "Error: " + error.message;
             }
-
-        } else {
-            alert("Vehicle Not Found. Check registration.");
-            load.style.display = "none";
         }
-    } catch (e) {
-        alert("Error connecting to live data. Make sure you're subscribed on RapidAPI!");
-        load.style.display = "none";
-    }
-}
-</script>
-
+    </script>
 </body>
 </html>
