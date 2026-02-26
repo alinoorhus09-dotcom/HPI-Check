@@ -3,82 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HPI Check - Live DVLA & Finance Data</title>
+    <title>Official DVLA Vehicle Check</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #0f172a; color: white; font-family: sans-serif; }
         .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
         .btn-glow { transition: 0.3s; background: #38bdf8; }
         .btn-glow:hover { box-shadow: 0 0 15px #38bdf8; transform: scale(1.02); }
-        .status-pass { color: #22c55e; font-weight: bold; font-size: 12px; }
     </style>
 </head>
 <body class="flex flex-col items-center p-6">
 
     <div class="w-full max-w-md text-center mt-10">
-        <h1 class="text-3xl font-bold text-sky-400 tracking-tighter uppercase">HPICHECK</h1>
-        <p class="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-medium">Official DVLA & HPI Verification</p>
+        <h1 class="text-3xl font-bold text-sky-400 tracking-tighter uppercase">DVLA CHECK</h1>
+        <p class="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-medium">Live Government Database Access</p>
     </div>
 
     <!-- Search Section -->
     <div class="w-full max-w-md mt-8 space-y-4">
         <input id="regIn" type="text" placeholder="ENTER REG" class="w-full p-4 rounded-xl bg-slate-800 border border-slate-700 text-center text-2xl font-bold uppercase tracking-widest focus:outline-none focus:border-sky-500">
-        <button onclick="fetchGovData()" class="w-full p-4 rounded-xl font-bold text-slate-900 btn-glow uppercase tracking-wider">Run Full History Scan</button>
+        <button onclick="fetchGovData()" class="w-full p-4 rounded-xl font-bold text-slate-900 btn-glow uppercase tracking-wider">Search Official Records</button>
     </div>
 
     <!-- Loading -->
     <div id="loading" class="hidden mt-10 text-center">
         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500 mx-auto"></div>
-        <p class="text-xs text-gray-400 mt-4">Connecting to Secure Database...</p>
+        <p class="text-xs text-gray-400 mt-4">Querying DVLA Servers...</p>
     </div>
 
     <!-- Error Box -->
     <div id="errorBox" class="hidden w-full max-w-md mt-4 p-4 bg-red-500/10 border border-red-500/50 rounded-xl text-red-500 text-xs text-center"></div>
 
-    <!-- Full HPI Results -->
+    <!-- REAL Results Only -->
     <div id="report" class="hidden w-full max-w-md mt-8 space-y-4 pb-20">
-        <div class="glass p-6 rounded-3xl border-l-4 border-sky-500">
+        <div class="glass p-8 rounded-3xl border-l-4 border-sky-500">
             <h2 id="resReg" class="text-4xl font-black text-white">---</h2>
-            <p id="resMake" class="text-sky-400 font-bold uppercase tracking-tight">--</p>
+            <p id="resMake" class="text-sky-400 font-bold uppercase tracking-tight mb-8">--</p>
             
-            <!-- Technical Specs -->
-            <div class="grid grid-cols-2 gap-4 mt-8 text-sm border-b border-white/5 pb-6">
+            <div class="grid grid-cols-2 gap-y-6 gap-x-4 text-sm">
                 <div><p class="text-gray-500 text-[10px] uppercase font-bold">Tax Status</p><p id="resTax" class="font-bold">--</p></div>
                 <div><p class="text-gray-500 text-[10px] uppercase font-bold">MOT Status</p><p id="resMOT" class="font-bold">--</p></div>
-                <div><p class="text-gray-500 text-[10px] uppercase font-bold">Engine</p><p id="resEngine" class="font-bold">--</p></div>
-                <div><p class="text-gray-500 text-[10px] uppercase font-bold">Colour</p><p id="resColor" class="font-bold">--</p></div>
+                <div><p class="text-gray-500 text-[10px] uppercase font-bold">Engine Size</p><p id="resEngine" class="font-bold">--</p></div>
+                <div><p class="text-gray-500 text-[10px] uppercase font-bold">Main Colour</p><p id="resColor" class="font-bold">--</p></div>
                 <div><p class="text-gray-500 text-[10px] uppercase font-bold">Fuel Type</p><p id="resFuel" class="font-bold">--</p></div>
-                <div><p class="text-gray-500 text-[10px] uppercase font-bold">Year</p><p id="resYear" class="font-bold">--</p></div>
-            </div>
-
-            <!-- HPI / Finance / Security Section -->
-            <div class="mt-6 space-y-3">
-                <h3 class="text-[11px] font-black text-white/40 uppercase tracking-[0.2em] mb-4">Security & History Check</h3>
-                
-                <div class="flex justify-between items-center py-1">
-                    <span class="text-sm text-gray-300">Outstanding Finance</span>
-                    <span class="status-pass uppercase">Passed</span>
-                </div>
-                <div class="flex justify-between items-center py-1">
-                    <span class="text-sm text-gray-300">Stolen Record (Police)</span>
-                    <span class="status-pass uppercase">Not Stolen</span>
-                </div>
-                <div class="flex justify-between items-center py-1">
-                    <span class="text-sm text-gray-300">Insurance Write-off</span>
-                    <span class="status-pass uppercase">No Record</span>
-                </div>
-                <div class="flex justify-between items-center py-1">
-                    <span class="text-sm text-gray-300">High Risk Record</span>
-                    <span class="status-pass uppercase">Passed</span>
-                </div>
-                <div class="flex justify-between items-center py-1">
-                    <span class="text-sm text-gray-300">Mileage Discrepancy</span>
-                    <span class="status-pass uppercase">Clear</span>
+                <div><p class="text-gray-500 text-[10px] uppercase font-bold">Year of Reg</p><p id="resYear" class="font-bold">--</p></div>
+                <div class="col-span-2 pt-4 border-t border-white/5">
+                    <p class="text-gray-500 text-[10px] uppercase font-bold">CO2 Emissions</p>
+                    <p id="resCo2" class="font-bold text-sky-200">--</p>
                 </div>
             </div>
         </div>
         
-        <p class="text-[9px] text-gray-500 text-center px-6">Official HPI Data verified against MIAFTR and Police National Computer records via secure API gateway.</p>
+        <p class="text-[9px] text-gray-600 text-center px-6">This report contains technical data directly from the DVLA. Finance, Theft, and Accident records are not available in public government sets.</p>
     </div>
 
     <script>
@@ -91,22 +67,20 @@
             document.getElementById('errorBox').style.display = "none";
 
             try {
-                // Uses your existing api/check.js bridge
                 const response = await fetch(`/api/check?vrm=${plate}`);
-                
-                if (!response.ok) throw new Error("Vehicle Not Found or Connection Error");
+                if (!response.ok) throw new Error("Vehicle Not Found");
                 
                 const data = await response.json();
 
-                // Mapping the real DVLA data
                 document.getElementById('resReg').innerText = data.registrationNumber || plate;
-                document.getElementById('resMake').innerText = data.make || "Found";
+                document.getElementById('resMake').innerText = `${data.make} (${data.monthOfFirstRegistration || ''})`;
                 document.getElementById('resTax').innerText = data.taxStatus || "N/A";
                 document.getElementById('resMOT').innerText = data.motStatus || "N/A";
                 document.getElementById('resEngine').innerText = (data.engineCapacity || "0") + "cc";
                 document.getElementById('resColor').innerText = data.colour || "N/A";
                 document.getElementById('resFuel').innerText = data.fuelType || "N/A";
                 document.getElementById('resYear').innerText = data.yearOfManufacture || "N/A";
+                document.getElementById('resCo2').innerText = (data.co2Emissions || "0") + " g/km";
 
                 document.getElementById('loading').style.display = "none";
                 document.getElementById('report').style.display = "block";
